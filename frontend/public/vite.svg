@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="16" fill="#1a365d"/>
+  <text x="50" y="62" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="36" fill="#63b3ed">DCF</text>
+  <path d="M20 75 L50 30 L80 75" stroke="#d69e2e" stroke-width="3" fill="none" opacity="0.6"/>
+</svg>

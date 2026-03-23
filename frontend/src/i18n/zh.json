@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "title": "DCF 估值智能分析",
+    "home": "首页",
+    "analysis": "估值分析",
+    "result": "分析结果"
+  },
+  "home": {
+    "hero_title": "智能 DCF 估值分析",
+    "subtitle": "AI 驱动的现金流折现估值工具",
+    "description": "上传财务报告或手动输入数据，自动完成 DCF 估值分析、敏感性分析，并生成专业的估值叙述报告。",
+    "cta": "开始分析",
+    "features": {
+      "auto_extract": {
+        "title": "智能数据提取",
+        "description": "自动从 PDF 财务报告中提取关键财务数据，支持多种报表格式。"
+      },
+      "dcf_model": {
+        "title": "DCF 估值模型",
+        "description": "基于自由现金流折现模型，自动计算企业价值和每股估值。"
+      },
+      "sensitivity": {
+        "title": "敏感性分析",
+        "description": "通过调整 WACC 和终端增长率，生成多维度敏感性分析矩阵。"
+      },
+      "ai_narrative": {
+        "title": "AI 估值叙述",
+        "description": "利用大语言模型自动生成专业的估值分析报告和投资建议。"
+      }
+    }
+  },
+  "analysis": {
+    "tabs": {
+      "upload": "上传报告",
+      "manual": "手动输入"
+    },
+    "upload": {
+      "title": "上传财务报告",
+      "hint": "支持 PDF 格式的年报、季报",
+      "drag_text": "点击或拖拽文件上传",
+      "extract_btn": "提取数据",
+      "extracting": "正在提取..."
+    },
+    "manual": {
+      "title": "手动输入财务数据"
+    },
+    "params": {
+      "title": "DCF 参数设置",
+      "projection_years": "预测年数",
+      "revenue_growth_rate": "营收增长率",
+      "terminal_growth_rate": "永续增长率",
+      "operating_margin": "经营利润率",
+      "tax_rate": "税率",
+      "capex_ratio": "资本开支率",
+      "da_ratio": "折旧摊销率",
+      "nwc_ratio": "净营运资本率",
+      "wacc": "加权平均资本成本 (WACC)",
+      "discount_rate_override": "自定义折现率"
+    },
+    "fields": {
+      "company_name": "公司名称",
+      "ticker": "股票代码",
+      "currency": "货币",
+      "fiscal_year": "财务年度",
+      "revenue": "营业收入",
+      "revenue_growth": "营收增长率",
+      "operating_income": "营业利润",
+      "operating_margin": "营业利润率",
+      "net_income": "净利润",
+      "depreciation_amortization": "折旧与摊销",
+      "capital_expenditure": "资本支出",
+      "change_in_working_capital": "营运资本变动",
+      "total_debt": "总债务",
+      "cash_and_equivalents": "现金及等价物",
+      "shares_outstanding": "流通股数",
+      "tax_rate": "有效税率",
+      "beta": "Beta 系数",
+      "risk_free_rate": "无风险利率",
+      "market_return": "市场回报率",
+      "cost_of_debt": "债务成本",
+      "current_stock_price": "当前股价"
+    },
+    "calculate_btn": "计算估值",
+    "calculating": "正在计算...",
+    "sensitivity_btn": "敏感性分析",
+    "narrative_btn": "生成 AI 报告",
+    "generating": "正在生成..."
+  },
+  "result": {
+    "title": "估值分析结果",
+    "summary": {
+      "title": "估值摘要",
+      "enterprise_value": "企业价值",
+      "equity_value": "股权价值",
+      "per_share_value": "每股价值",
+      "current_price": "当前股价",
+      "upside_downside": "潜在空间",
+      "wacc_used": "使用的 WACC",
+      "terminal_growth": "永续增长率"
+    },
+    "projections": {
+      "title": "自由现金流预测",
+      "year": "年份",
+      "revenue": "营收",
+      "operating_income": "营业利润",
+      "nopat": "税后营业利润",
+      "da": "折旧摊销",
+      "capex": "资本支出",
+      "nwc_change": "营运资本变动",
+      "fcf": "自由现金流",
+      "discount_factor": "折现因子",
+      "present_value": "现值"
+    },
+    "terminal": {
+      "title": "终端价值",
+      "terminal_value": "终端价值",
+      "pv_terminal": "终端价值现值",
+      "pv_fcf": "FCF 现值合计"
+    },
+    "sensitivity": {
+      "title": "敏感性分析",
+      "wacc_axis": "WACC",
+      "growth_axis": "永续增长率",
+      "heatmap_title": "每股价值敏感性热力图"
+    },
+    "narrative": {
+      "title": "AI 估值报告",
+      "generating": "正在生成估值报告...",
+      "empty": "点击「生成 AI 报告」按钮生成估值分析报告"
+    },
+    "charts": {
+      "fcf_trend": "自由现金流趋势",
+      "revenue_trend": "营收与利润趋势",
+      "value_bridge": "企业价值桥图",
+      "pv_breakdown": "现值构成"
+    }
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "发生错误",
+    "success": "操作成功",
+    "cancel": "取消",
+    "confirm": "确认",
+    "export": "导出",
+    "back": "返回",
+    "next": "下一步",
+    "reset": "重置",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "close": "关闭",
+    "retry": "重试",
+    "year_unit": "年",
+    "currency_unit": "元",
+    "percent": "%",
+    "billion": "亿",
+    "million": "百万",
+    "no_data": "暂无数据",
+    "copy_success": "复制成功",
+    "download": "下载"
+  }
+}
