@@ -15,6 +15,7 @@ import { useStore } from '@/store/useStore';
 import HomePage from '@/pages/HomePage';
 import AnalysisPage from '@/pages/AnalysisPage';
 import ResultPage from '@/pages/ResultPage';
+import HistoryPage from '@/pages/HistoryPage';
 
 const { Header, Content, Footer } = Layout;
 
@@ -36,6 +37,9 @@ function AppNavigation() {
       label: <Link to="/result">{t('nav.result')}</Link>,
     },
   ];
+
+  // Add history link if we have a ticker in store (optional enhancement)
+  // For now, users can access history via URL directly: /history/AAPL
 
   const languageItems = [
     { key: 'zh', label: '中文' },
@@ -129,6 +133,7 @@ export default function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/analysis" element={<AnalysisPage />} />
               <Route path="/result" element={<ResultPage />} />
+              <Route path="/history/:ticker" element={<HistoryPage />} />
             </Routes>
           </Content>
           <Footer

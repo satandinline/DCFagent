@@ -25,10 +25,22 @@ function handleError(err: unknown): never {
   throw err;
 }
 
-export async function uploadPDF(file: File): Promise<ExtractionResponse> {
+export async function uploadPDF(
+  file: File,
+  companyName?: string,
+  ticker?: string,
+  useRag: boolean = true,
+  useWebSearch: boolean = true
+): Promise<ExtractionResponse> {
   try {
     const form = new FormData();
     form.append('file', file);
+    
+    if (companyName) form.append('company_name', companyName);
+    if (ticker) form.append('ticker', ticker);
+    form.append('use_rag', String(useRag));
+    form.append('use_web_search', String(useWebSearch));
+    
     const { data } = await api.post<ExtractionResponse>('/extract/upload', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 180_000,
@@ -48,9 +60,14 @@ export async function extractData(text: string): Promise<ExtractionResponse> {
   }
 }
 
-export async function calculateDCF(request: CalculateRequest): Promise<DCFResult> {
+export async function calculateDCF(
+  request: CalculateRequest,
+  saveToDb: boolean = true
+): Promise<DCFResult> {
   try {
-    const { data } = await api.post<DCFResult>('/calculate', request);
+    const { data } = await api.post<DCFResult>('/calculate', request, {
+      params: { save_to_db: saveToDb }
+    });
     return data;
   } catch (err) {
     handleError(err);
@@ -73,6 +90,36 @@ export async function generateNarrative(
 ): Promise<NarrativeResponse> {
   try {
     const { data } = await api.post<NarrativeResponse>('/narrative', request);
+    return data;
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+// Database-related API functions
+export async function getTrends(ticker: string) {
+  try {
+    const { data } = await api.get(`/trends/${ticker}`);
+    return data;
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+export async function loadFromDb(ticker: string) {
+  try {
+    const { data } = await api.get(`/load-from-db/${ticker}`);
+    return data;
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+export async function getValuationHistory(ticker: string, limit: number = 10) {
+  try {
+    const { data } = await api.get(`/valuation-history/${ticker}`, {
+      params: { limit }
+    });
     return data;
   } catch (err) {
     handleError(err);

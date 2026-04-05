@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Collapse, Typography, Empty, Tooltip, Tag, Divider } from 'antd';
+import { Button, Card, Collapse, Typography, Empty, Tooltip, Tag, Divider, message } from 'antd';
 import {
   ArrowLeftOutlined,
   DownloadOutlined,
@@ -10,6 +10,7 @@ import {
   RiseOutlined,
   FallOutlined,
   FileTextOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '@/store/useStore';
@@ -17,6 +18,8 @@ import { useStore } from '@/store/useStore';
 import CashFlowChart from '@/components/CashFlowChart';
 import SensitivityTable from '@/components/SensitivityTable';
 import WaterfallChart from '@/components/WaterfallChart';
+import TrendChart from '@/components/TrendChart';
+import { getTrends } from '@/services/api';
 
 const { Title, Text } = Typography;
 
@@ -36,10 +39,37 @@ export default function ResultPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { financialData, dcfResult, sensitivityMatrix, narrative } = useStore();
+  
+  const [trendData, setTrendData] = useState<any>(null);
+  const [loadingTrend, setLoadingTrend] = useState(false);
 
   useEffect(() => {
     if (!dcfResult) navigate('/analysis', { replace: true });
   }, [dcfResult, navigate]);
+  
+  // Load trend data if ticker is available
+  useEffect(() => {
+    if (financialData?.ticker && !trendData) {
+      loadTrendData();
+    }
+  }, [financialData?.ticker]);
+  
+  const loadTrendData = async () => {
+    if (!financialData?.ticker) return;
+    
+    setLoadingTrend(true);
+    try {
+      const response = await getTrends(financialData.ticker);
+      if (response.success && response.data) {
+        setTrendData(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading trends:', error);
+      // Don't show error message, just silently fail
+    } finally {
+      setLoadingTrend(false);
+    }
+  };
 
   if (!dcfResult || !financialData) return null;
 
@@ -112,6 +142,14 @@ export default function ResultPage() {
           <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/analysis')}>
             {t('common.back')}
           </Button>
+          {financialData.ticker && (
+            <Button 
+              icon={<HistoryOutlined />} 
+              onClick={() => navigate(`/history/${financialData.ticker}`)}
+            >
+              查看历史
+            </Button>
+          )}
           <Tooltip title="Coming soon">
             <Button type="primary" icon={<DownloadOutlined />}>
               {t('common.export')}
@@ -186,6 +224,11 @@ export default function ResultPage() {
           <WaterfallChart dcfResult={dcfResult} financialData={financialData} />
         </Card>
       </div>
+
+      {/* Trend Analysis Chart */}
+      {financialData.ticker && (
+        <TrendChart data={trendData} loading={loadingTrend} />
+      )}
 
       {/* AI Narrative */}
       <Collapse

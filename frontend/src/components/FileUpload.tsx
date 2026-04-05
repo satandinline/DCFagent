@@ -17,13 +17,23 @@ export default function FileUpload() {
   const [extracted, setExtracted] = useState<FinancialData | null>(null);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm<FinancialData>();
+  
+  // RAG parameters
+  const [companyName, setCompanyName] = useState('');
+  const [ticker, setTicker] = useState('');
 
   const handleUpload = async (file: File) => {
     setUploading(true);
     setLoading(true);
     setError('');
     try {
-      const response = await uploadPDF(file);
+      const response = await uploadPDF(
+        file,
+        companyName || undefined,
+        ticker || undefined,
+        true,  // useRag
+        true   // useWebSearch
+      );
       if (response.success && response.financial_data) {
         setExtracted(response.financial_data);
         setFinancialData(response.financial_data);
@@ -97,6 +107,40 @@ export default function FileUpload() {
   return (
     <div className="space-y-6">
       <Card>
+        {/* RAG Input Section */}
+        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
+            🔍 RAG 检索增强（可选，但推荐）
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                公司名称
+              </label>
+              <Input
+                placeholder="例如：Apple Inc."
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                disabled={uploading}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                股票代码（可选）
+              </label>
+              <Input
+                placeholder="例如：AAPL"
+                value={ticker}
+                onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                disabled={uploading}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                提供股票代码可以获取Yahoo Finance实时数据
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <Dragger {...uploadProps} disabled={uploading}>
           <Spin spinning={uploading}>
             <p className="ant-upload-drag-icon">

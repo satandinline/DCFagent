@@ -68,7 +68,7 @@ export default function AnalysisPage() {
       const request = { financial_data: financialData, parameters: dcfParameters };
 
       setCalcStep(t('analysis.calculating'));
-      const dcfResult = await calculateDCF(request);
+      const dcfResult = await calculateDCF(request, true); // saveToDb = true
       setDCFResult(dcfResult);
 
       setCalcStep(t('analysis.sensitivity_btn'));

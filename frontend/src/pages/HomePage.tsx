@@ -1,13 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography } from 'antd';
+import { Button, Typography, Input, Card, message, Spin } from 'antd';
 import {
   FileSearchOutlined,
   CalculatorOutlined,
   HeatMapOutlined,
   RobotOutlined,
   ArrowRightOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+import { loadFromDb } from '@/services/api';
+import { useStore } from '@/store/useStore';
 
 const { Title, Paragraph } = Typography;
 
@@ -23,6 +27,38 @@ const featureKeys = ['auto_extract', 'dcf_model', 'sensitivity', 'ai_narrative']
 export default function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { setFinancialData, setLoading } = useStore();
+  
+  const [loadingTicker, setLoadingTicker] = useState('');
+  const [tickerInput, setTickerInput] = useState('');
+
+  const handleLoadFromDb = async () => {
+    if (!tickerInput.trim()) {
+      message.warning('请输入股票代码');
+      return;
+    }
+
+    const ticker = tickerInput.trim().toUpperCase();
+    setLoading(true);
+    setLoadingTicker(ticker);
+    
+    try {
+      const response = await loadFromDb(ticker);
+      if (response.success && response.financial_data) {
+        setFinancialData(response.financial_data);
+        message.success(`成功加载 ${ticker} 的数据`);
+        navigate('/analysis');
+      } else {
+        message.error(`未找到 ${ticker} 的数据，请先上传PDF进行估值`);
+      }
+    } catch (error) {
+      console.error('Error loading from DB:', error);
+      message.error('加载失败，请检查网络连接');
+    } finally {
+      setLoading(false);
+      setLoadingTicker('');
+    }
+  };
 
   return (
     <div className="relative overflow-hidden">
@@ -76,6 +112,43 @@ export default function HomePage() {
         >
           {t('home.cta')}
         </Button>
+      </section>
+
+      {/* Quick Load from DB Section */}
+      <section className="mb-12 px-2">
+        <Card 
+          title={
+            <div className="flex items-center gap-2">
+              <DatabaseOutlined className="text-blue-500" />
+              <span>快速加载历史数据</span>
+            </div>
+          }
+          className="max-w-2xl mx-auto"
+        >
+          <div className="flex gap-3">
+            <Input
+              placeholder="输入股票代码（如：AAPL）"
+              value={tickerInput}
+              onChange={(e) => setTickerInput(e.target.value.toUpperCase())}
+              onPressEnter={handleLoadFromDb}
+              disabled={!!loadingTicker}
+              size="large"
+              className="flex-1"
+            />
+            <Button
+              type="primary"
+              size="large"
+              onClick={handleLoadFromDb}
+              loading={!!loadingTicker}
+              icon={<DatabaseOutlined />}
+            >
+              {loadingTicker ? `加载中...` : '从数据库加载'}
+            </Button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            如果之前对该股票进行过估值，可以快速加载数据进行重新分析
+          </p>
+        </Card>
       </section>
 
       {/* Feature Cards */}
