@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "title": "DCF Valuation Agent",
+    "home": "Home",
+    "analysis": "Analysis",
+    "result": "Results"
+  },
+  "home": {
+    "hero_title": "Intelligent DCF Valuation",
+    "subtitle": "AI-Powered Discounted Cash Flow Analysis",
+    "description": "Upload financial reports or enter data manually for automated DCF valuation, sensitivity analysis, and professional AI-generated narrative reports.",
+    "cta": "Start Analysis",
+    "features": {
+      "auto_extract": {
+        "title": "Smart Data Extraction",
+        "description": "Automatically extract key financial data from PDF reports, supporting multiple report formats."
+      },
+      "dcf_model": {
+        "title": "DCF Valuation Model",
+        "description": "Calculate enterprise value and per-share valuation based on free cash flow discounting."
+      },
+      "sensitivity": {
+        "title": "Sensitivity Analysis",
+        "description": "Generate multi-dimensional sensitivity matrices by adjusting WACC and terminal growth rates."
+      },
+      "ai_narrative": {
+        "title": "AI Valuation Narrative",
+        "description": "Leverage LLMs to auto-generate professional valuation reports and investment insights."
+      }
+    }
+  },
+  "analysis": {
+    "tabs": {
+      "upload": "Upload Report",
+      "manual": "Manual Input"
+    },
+    "upload": {
+      "title": "Upload Financial Report",
+      "hint": "Supports PDF format annual and quarterly reports",
+      "drag_text": "Click or drag file to upload",
+      "extract_btn": "Extract Data",
+      "extracting": "Extracting..."
+    },
+    "manual": {
+      "title": "Enter Financial Data Manually"
+    },
+    "params": {
+      "title": "DCF Parameters",
+      "projection_years": "Projection Years",
+      "revenue_growth_rate": "Revenue Growth Rate",
+      "terminal_growth_rate": "Terminal Growth Rate",
+      "operating_margin": "Operating Margin",
+      "tax_rate": "Tax Rate",
+      "capex_ratio": "CapEx Ratio",
+      "da_ratio": "D&A Ratio",
+      "nwc_ratio": "NWC Ratio",
+      "wacc": "WACC",
+      "discount_rate_override": "Custom Discount Rate"
+    },
+    "fields": {
+      "company_name": "Company Name",
+      "ticker": "Ticker Symbol",
+      "currency": "Currency",
+      "fiscal_year": "Fiscal Year",
+      "revenue": "Revenue",
+      "revenue_growth": "Revenue Growth",
+      "operating_income": "Operating Income",
+      "operating_margin": "Operating Margin",
+      "net_income": "Net Income",
+      "depreciation_amortization": "Depreciation & Amortization",
+      "capital_expenditure": "Capital Expenditure",
+      "change_in_working_capital": "Change in Working Capital",
+      "total_debt": "Total Debt",
+      "cash_and_equivalents": "Cash & Equivalents",
+      "shares_outstanding": "Shares Outstanding",
+      "tax_rate": "Effective Tax Rate",
+      "beta": "Beta",
+      "risk_free_rate": "Risk-Free Rate",
+      "market_return": "Market Return",
+      "cost_of_debt": "Cost of Debt",
+      "current_stock_price": "Current Stock Price"
+    },
+    "calculate_btn": "Calculate Valuation",
+    "calculating": "Calculating...",
+    "sensitivity_btn": "Sensitivity Analysis",
+    "narrative_btn": "Generate AI Report",
+    "generating": "Generating..."
+  },
+  "result": {
+    "title": "Valuation Results",
+    "summary": {
+      "title": "Valuation Summary",
+      "enterprise_value": "Enterprise Value",
+      "equity_value": "Equity Value",
+      "per_share_value": "Per Share Value",
+      "current_price": "Current Price",
+      "upside_downside": "Upside/Downside",
+      "wacc_used": "WACC Used",
+      "terminal_growth": "Terminal Growth Rate"
+    },
+    "projections": {
+      "title": "Free Cash Flow Projections",
+      "year": "Year",
+      "revenue": "Revenue",
+      "operating_income": "Operating Income",
+      "nopat": "NOPAT",
+      "da": "D&A",
+      "capex": "CapEx",
+      "nwc_change": "NWC Change",
+      "fcf": "Free Cash Flow",
+      "discount_factor": "Discount Factor",
+      "present_value": "Present Value"
+    },
+    "terminal": {
+      "title": "Terminal Value",
+      "terminal_value": "Terminal Value",
+      "pv_terminal": "PV of Terminal Value",
+      "pv_fcf": "PV of FCF Total"
+    },
+    "sensitivity": {
+      "title": "Sensitivity Analysis",
+      "wacc_axis": "WACC",
+      "growth_axis": "Terminal Growth Rate",
+      "heatmap_title": "Per Share Value Sensitivity Heatmap"
+    },
+    "narrative": {
+      "title": "AI Valuation Report",
+      "generating": "Generating valuation report...",
+      "empty": "Click 'Generate AI Report' to create a valuation narrative"
+    },
+    "charts": {
+      "fcf_trend": "Free Cash Flow Trend",
+      "revenue_trend": "Revenue & Profit Trend",
+      "value_bridge": "Enterprise Value Bridge",
+      "pv_breakdown": "Present Value Breakdown"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Operation successful",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "export": "Export",
+    "back": "Back",
+    "next": "Next",
+    "reset": "Reset",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "retry": "Retry",
+    "year_unit": "yr",
+    "currency_unit": "$",
+    "percent": "%",
+    "billion": "B",
+    "million": "M",
+    "no_data": "No data available",
+    "copy_success": "Copied",
+    "download": "Download"
+  }
+}
