@@ -16,25 +16,26 @@
 
 ## 🛠️ 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 后端 | Python 3.11+, FastAPI, Uvicorn, Pydantic |
-| LLM | MiniMax-M2.7-highspeed (OpenAI 兼容接口) |
-| PDF 解析 | pdfplumber |
-| 数据库 | MySQL 8.0+, PyMySQL, SQLAlchemy |
+
+| 层级     | 技术                                             |
+| -------- | ------------------------------------------------ |
+| 后端     | Python 3.11+, FastAPI, Uvicorn, Pydantic         |
+| LLM      | MiniMax-M2.7-highspeed (OpenAI 兼容接口)         |
+| PDF 解析 | pdfplumber                                       |
+| 数据库   | MySQL 8.0+, PyMySQL, SQLAlchemy                  |
 | 搜索服务 | yfinance, ddgs (DuckDuckGo), googlesearch-python |
-| 前端 | React 18, TypeScript, Vite |
-| UI 组件 | Ant Design 5, TailwindCSS |
-| 图表 | ECharts (echarts-for-react) |
-| 状态管理 | Zustand |
-| 国际化 | react-i18next |
+| 前端     | React 18, TypeScript, Vite                       |
+| UI 组件  | Ant Design 5, TailwindCSS                        |
+| 图表     | ECharts (echarts-for-react)                      |
+| 状态管理 | Zustand                                          |
+| 国际化   | react-i18next                                    |
 
 ## 快速开始
 
 ### 1. 克隆项目
 
 ```bash
-git clone <repo-url>
+git clone git@github.com:satandinline/DCFagent.git
 cd dcfestimate
 ```
 
@@ -254,17 +255,18 @@ dcfestimate/
 
 ## 🔌 API 接口
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | `/api/health` | 健康检查 |
-| POST | `/api/extract/upload` | 上传 PDF 并提取财务数据 |
-| POST | `/api/extract/text` | 从文本提取财务数据 |
-| POST | `/api/calculate` | 运行 DCF 估值计算（自动保存到DB） |
-| POST | `/api/sensitivity` | 生成敏感性分析矩阵 |
-| POST | `/api/narrative` | 生成 AI 估值叙述 |
-| GET | `/api/trends/{ticker}` | 获取历史趋势分析 |
-| GET | `/api/load-from-db/{ticker}` | 从数据库加载财务数据 |
-| GET | `/api/valuation-history/{ticker}` | 获取估值历史记录 |
+
+| 方法 | 路径                              | 说明                              |
+| ---- | --------------------------------- | --------------------------------- |
+| GET  | `/api/health`                     | 健康检查                          |
+| POST | `/api/extract/upload`             | 上传 PDF 并提取财务数据           |
+| POST | `/api/extract/text`               | 从文本提取财务数据                |
+| POST | `/api/calculate`                  | 运行 DCF 估值计算（自动保存到DB） |
+| POST | `/api/sensitivity`                | 生成敏感性分析矩阵                |
+| POST | `/api/narrative`                  | 生成 AI 估值叙述                  |
+| GET  | `/api/trends/{ticker}`            | 获取历史趋势分析                  |
+| GET  | `/api/load-from-db/{ticker}`      | 从数据库加载财务数据              |
+| GET  | `/api/valuation-history/{ticker}` | 获取估值历史记录                  |
 
 ## 📐 DCF 计算公式
 
@@ -297,6 +299,7 @@ python init_db.py
 ```
 
 这将创建以下数据表：
+
 - `stocks` - 股票基础信息
 - `asset_profiles` - 公司档案
 - `income_statements` - 利润表
@@ -307,10 +310,10 @@ python init_db.py
 
 ### 数据库功能
 
-✅ **自动保存**：PDF提取的财务数据自动存入数据库  
-✅ **历史追踪**：记录每次估值结果，支持趋势分析  
-✅ **快速加载**：从数据库加载历史数据进行重新估值  
-✅ **趋势分析**：计算CAGR、利润率等关键指标  
+✅ **自动保存**：PDF提取的财务数据自动存入数据库
+✅ **历史追踪**：记录每次估值结果，支持趋势分析
+✅ **快速加载**：从数据库加载历史数据进行重新估值
+✅ **趋势分析**：计算CAGR、利润率等关键指标
 
 ## 🔍 RAG 检索增强生成
 
@@ -344,7 +347,7 @@ python init_db.py
             │
             └─ Step 4: Google Search ← 最后备选
                 ✓ 补充搜索结果
-                
+              
             │
             ▼
     ┌───────────────┐
@@ -359,12 +362,13 @@ python init_db.py
 
 ### 搜索服务特点
 
-| 数据源 | 优先级 | 优势 | 适用场景 |
-|--------|--------|------|----------|
-| **数据库** | 1st | 最快、最可靠 | 历史数据检索 |
-| **Yahoo Finance** | 2nd | 专业金融数据 | 实时股价、Beta、市值 |
-| **DuckDuckGo** | 3rd | 稳定、免费 | 通用搜索、新闻 |
-| **Google Search** | 4th | 广泛覆盖 | 备选方案 |
+
+| 数据源            | 优先级 | 优势         | 适用场景             |
+| ----------------- | ------ | ------------ | -------------------- |
+| **数据库**        | 1st    | 最快、最可靠 | 历史数据检索         |
+| **Yahoo Finance** | 2nd    | 专业金融数据 | 实时股价、Beta、市值 |
+| **DuckDuckGo**    | 3rd    | 稳定、免费   | 通用搜索、新闻       |
+| **Google Search** | 4th    | 广泛覆盖     | 备选方案             |
 
 ### 使用 RAG
 
@@ -388,9 +392,9 @@ result = await extract_from_text(
 
 ### 容错机制
 
-✅ **自动重试**：Yahoo Finance限流时自动重试3次（3s→6s→10s）  
-✅ **智能降级**：某一层失败时自动切换到下一层  
-✅ **Mock兜底**：全部失败时使用模拟数据保证系统稳定  
+✅ **自动重试**：Yahoo Finance限流时自动重试3次（3s→6s→10s）
+✅ **智能降级**：某一层失败时自动切换到下一层
+✅ **Mock兜底**：全部失败时使用模拟数据保证系统稳定
 ✅ **完全免费**：所有搜索服务无需API密钥
 
 ---
@@ -439,12 +443,14 @@ python start.py --public     # 公网访问模式（ngrok）
 ### 方式二：分别启动
 
 **后端：**
+
 ```bash
 cd backend
 uvicorn main:app --reload --port 8000
 ```
 
 **前端：**
+
 ```bash
 cd frontend
 npm run dev
