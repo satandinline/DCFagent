@@ -125,3 +125,100 @@ export interface AppState {
   toggleTheme: () => void;
   resetAll: () => void;
 }
+
+// =============================================================================
+// Agent V2 Types - Multi-Agent System
+// =============================================================================
+
+export interface WorkflowStatus {
+  workflow_id: string;
+  ticker: string;
+  status: 'running' | 'completed' | 'failed' | 'awaiting_approval' | 'rejected';
+  requires_approval: boolean;
+  approval_request_id?: string;
+  analysis_result?: ValuationResult;
+}
+
+export interface ValuationResult {
+  ticker: string;
+  company_name?: string;
+  industry?: string;
+  action: 'BUY' | 'HOLD' | 'SELL';
+  upside_percent: number;
+  confidence: '高' | '中' | '低' | 'high' | 'medium' | 'low';
+  fair_value?: number;
+  current_price?: number;
+  primary_method?: string;
+  reasoning?: string;
+  warnings?: string[];
+}
+
+export interface ApprovalRequest {
+  id: string;
+  requestor: string;
+  request_type: string;
+  description: string;
+  risk_level: 'low' | 'medium' | 'high' | 'critical';
+  status: 'pending' | 'approved' | 'rejected' | 'expired' | 'cancelled';
+  details: {
+    ticker?: string;
+    analysis_result?: ValuationResult;
+  };
+  created_at: string;
+  expires_at?: string;
+  approver_comments?: string;
+  approver?: string;
+}
+
+export interface MemoryEntry {
+  memory_id: string;
+  content: string;
+  metadata: {
+    ticker?: string;
+    company_name?: string;
+    industry?: string;
+    action?: string;
+    upside_percent?: number;
+    confidence?: string;
+    timestamp?: string;
+  };
+  created_at: string;
+}
+
+export interface MemoryInsights {
+  has_history: boolean;
+  analysis_count: number;
+  action_distribution: Record<string, number>;
+  average_upside: number;
+  confidence_trend: string;
+  message?: string;
+}
+
+export interface AgentInfo {
+  name: string;
+  role: string;
+  description: string;
+  capabilities: string[];
+  tools: string[];
+  metrics: {
+    tasks_executed: number;
+    tasks_succeeded: number;
+    tasks_failed: number;
+    total_execution_time: number;
+    success_rate: number;
+    avg_execution_time: number;
+  };
+}
+
+export interface BatchValuationResult {
+  total: number;
+  completed: number;
+  pending_approval: number;
+  failed: number;
+  results: Array<{
+    ticker: string;
+    success: boolean;
+    workflow_id?: string;
+    error?: string;
+  }>;
+}

@@ -21,7 +21,7 @@
 | -------- | ------------------------------------------------ |
 | 后端     | Python 3.11+, FastAPI, Uvicorn, Pydantic         |
 | LLM      | MiniMax-M2.7-highspeed (OpenAI 兼容接口)         |
-| PDF 解析 | pdfplumber                                       |
+| PDF 解析 | PyMuPDF / pdfplumber (智能页码选择)                     |
 | 数据库   | MySQL 8.0+, PyMySQL, SQLAlchemy                  |
 | 搜索服务 | yfinance, ddgs (DuckDuckGo), googlesearch-python |
 | 前端     | React 18, TypeScript, Vite                       |
@@ -71,19 +71,28 @@ npm install
 
 ### 5. 启动开发服务器
 
-在项目根目录运行后端：
+**重要**: 确保当前工作目录是项目根目录 `dcfestimate`。
+
+**后端**：
 
 ```bash
-uvicorn backend.main:app --reload --port 8000
+# 从项目根目录运行，使用5050端口
+uvicorn backend.main:app --reload --port 5050
 ```
 
-在 `frontend` 目录运行前端：
+**前端**：
 
 ```bash
+# 进入frontend目录
+cd frontend
+
+# 运行开发服务器
 npm run dev
 ```
 
-打开浏览器访问 http://localhost:3000
+访问 http://localhost:3000
+
+**注意**: 如果前端端口3000被占用,Vite会自动使用下一个可用端口(如3001)。
 
 ## 🏗️ 项目架构
 
@@ -266,7 +275,8 @@ dcfestimate/
 | POST | `/api/narrative`                  | 生成 AI 估值叙述                  |
 | GET  | `/api/trends/{ticker}`            | 获取历史趋势分析                  |
 | GET  | `/api/load-from-db/{ticker}`      | 从数据库加载财务数据              |
-| GET  | `/api/valuation-history/{ticker}` | 获取估值历史记录                  |
+| GET  | `/api/valuation-history`           | 获取所有估值历史记录                |
+| GET  | `/api/valuation-history/{ticker}` | 获取指定股票估值历史记录             |
 
 ## 📐 DCF 计算公式
 
@@ -275,6 +285,20 @@ dcfestimate/
 - **终端价值** = FCF × (1+g) / (WACC − g)
 - **企业价值** = Σ PV(FCF) + PV(终端价值)
 - **每股价值** = (企业价值 − 总债务 + 现金) / 流通股数
+
+## 💡 参数输入
+
+系统支持直观的百分比输入方式：
+
+| 参数 | 输入示例 | 说明 |
+|------|----------|------|
+| 营业收入增长率 | `5` | 表示 5% |
+| 营业利润率 | `15` | 表示 15% |
+| 税率 | `25` | 表示 25% |
+| WACC | `10` | 表示 10% |
+| 无风险利率 | `3` | 表示 3% |
+
+系统会自动在显示时添加 `%` 后缀，并在计算时转换为小数格式。
 
 ## 💾 数据库配置
 
@@ -315,11 +339,30 @@ python init_db.py
 ✅ **快速加载**：从数据库加载历史数据进行重新估值
 ✅ **趋势分析**：计算CAGR、利润率等关键指标
 
-## 🔍 RAG 检索增强生成
+本项目实现了强大的PDF智能解析系统和RAG（Retrieval-Augmented Generation）系统，结合两层技术显著提升DCF估值的准确性和效率。
 
-本项目实现了强大的RAG（Retrieval-Augmented Generation）系统，通过三层搜索策略自动获取实时金融数据，显著提升DCF估值的准确性。
+### 📄 PDF 智能页码选择
 
-### 三层搜索架构
+A股年报结构特点：
+- **前20页**：包含公司基本情况、主要会计数据、财务指标摘要
+- **最后2页**：包含完整的财务报表（资产负债表、利润表、现金流量表）
+- **中间页**：主要是文字描述、业务分析，对DCF直接有用的数据较少
+
+```
+500页PDF年报
+    │
+    ├── 前20页 ──► 主要会计数据、财务指标
+    │
+    ├── 中间页 (20~倒数第3页) ──► 业务分析（跳过）
+    │
+    └── 最后2页 ──► 完整财务报表
+    │
+    共扫描22页 → 高效提取关键数据
+```
+
+**财务表页识别**：系统自动识别合并资产负债表、利润表、现金流量表等关键页。
+
+### 🔍 RAG 三层搜索架构
 
 ```
 用户上传PDF + 公司名称/股票代码

@@ -19,3 +19,15 @@ MYSQL_PORT: int = int(os.getenv("MYSQL_PORT", "3306"))
 MYSQL_DATABASE: str = os.getenv("MYSQL_DATABASE", "dcf_estimation")
 
 UPLOAD_DIR: Path = _backend_dir / "temp_uploads"
+
+# Agent Configuration
+AGENT_ENABLED: bool = os.getenv("AGENT_ENABLED", "false").lower() == "true"
+AGENT_INTERVAL_HOURS: int = int(os.getenv("AGENT_INTERVAL_HOURS", "24"))
+
+# Email Configuration
+EMAIL_ENABLED: bool = os.getenv("EMAIL_ENABLED", "false").lower() == "true"
+EMAIL_HOST: str = os.getenv("QQ_EMAIL_HOST", "smtp.qq.com")
+EMAIL_PORT: int = int(os.getenv("QQ_EMAIL_PORT", "587"))
+EMAIL_USER: str = os.getenv("QQ_EMAIL_USER", "")
+EMAIL_PASSWORD: str = os.getenv("QQ_EMAIL_PASSWORD", "")
+EMAIL_TO: str = os.getenv("EMAIL_TO", "")

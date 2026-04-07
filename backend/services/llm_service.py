@@ -5,12 +5,19 @@ import logging
 import re
 from typing import Any
 
+import httpx
 from openai import AsyncOpenAI
 
 from backend.config import MINIMAX_API_KEY, MINIMAX_BASE_URL, MINIMAX_MODEL
 from backend.prompts import get_prompt, PROMPT_TEMPLATES
 
 logger = logging.getLogger(__name__)
+
+# LLM API timeout settings
+LLM_TIMEOUT = httpx.Timeout(
+    timeout=120.0,  # 120 seconds total for the request
+    connect=10.0,    # 10 seconds for connection
+)
 
 EXTRACTION_SYSTEM_PROMPT = """\
 你是一位资深财务分析师AI。你的任务是从财务报告文本中提取结构化财务数据。
@@ -73,6 +80,7 @@ class LLMService:
         self.client = AsyncOpenAI(
             api_key=MINIMAX_API_KEY,
             base_url=MINIMAX_BASE_URL,
+            timeout=LLM_TIMEOUT,
         )
         self.model = MINIMAX_MODEL
 
@@ -86,14 +94,31 @@ class LLMService:
             text = re.sub(r"^```(?:json)?\s*", "", text)
             text = re.sub(r"\s*```$", "", text)
 
-        match = re.search(r"\{[\s\S]*\}", text)
-        if match:
-            return json.loads(match.group())
+        # Find the first complete JSON object using bracket counting
+        start_idx = text.find('{')
+        if start_idx == -1:
+            raise ValueError(f"No JSON object found in response: {text[:500]}")
 
-        return json.loads(text)
+        depth = 0
+        end_idx = -1
+        for i, char in enumerate(text[start_idx:], start_idx):
+            if char == '{':
+                depth += 1
+            elif char == '}':
+                depth -= 1
+                if depth == 0:
+                    end_idx = i + 1
+                    break
+
+        if end_idx == -1:
+            raise ValueError(f"No complete JSON object found: {text[:500]}")
+
+        json_str = text[start_idx:end_idx]
+        return json.loads(json_str)
 
     async def extract_financial_data(self, text: str) -> dict[str, Any]:
-        truncated = text[:28000]
+        # Reduced from 28000 to 15000 for faster processing
+        truncated = text[:15000]
         try:
             response = await self.client.chat.completions.create(
                 model=self.model,
@@ -168,7 +193,8 @@ class LLMService:
         Returns:
             Extracted financial data as dictionary
         """
-        truncated = text[:28000]
+        # Reduced from 28000 to 15000 for faster processing
+        truncated = text[:15000]
         
         # Get prompt from centralized prompts module
         try:

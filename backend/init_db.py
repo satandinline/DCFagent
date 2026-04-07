@@ -193,6 +193,94 @@ def create_tables(connection):
             )
         """)
         
+        # 8. Agent Configs table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS agent_configs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                ticker VARCHAR(10),
+                enabled BOOLEAN DEFAULT TRUE,
+                custom_interval_hours INT,
+                last_run TIMESTAMP NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (ticker) REFERENCES stocks(ticker) ON DELETE CASCADE
+            )
+        """)
+        
+        # 9. Portfolio Recommendations table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS portfolio_recommendations (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                ticker VARCHAR(10),
+                company_name VARCHAR(200),
+                action ENUM('BUY', 'HOLD', 'SELL') NOT NULL,
+                upside DECIMAL(10, 4),
+                confidence ENUM('HIGH', 'MEDIUM', 'LOW') DEFAULT 'MEDIUM',
+                valuation_methods TEXT,
+                reason TEXT,
+                industry VARCHAR(100),
+                sector VARCHAR(100),
+                details TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_ticker_action (ticker, action),
+                INDEX idx_created_at (created_at)
+            )
+        """)
+        
+        # 10. Agent Logs table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS agent_logs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                action VARCHAR(50) NOT NULL,
+                ticker VARCHAR(10),
+                status ENUM('SUCCESS', 'FAILED', 'RUNNING') DEFAULT 'SUCCESS',
+                message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_action_ticker (action, ticker),
+                INDEX idx_created_at (created_at)
+            )
+        """)
+        
+        # 11. Data Fetch Logs table - Track data fetch operations
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS data_fetch_logs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                ticker VARCHAR(10),
+                fetch_type ENUM('scheduled', 'manual', 'incremental') NOT NULL,
+                fetch_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                data_found BOOLEAN DEFAULT FALSE,
+                new_data_available BOOLEAN DEFAULT FALSE,
+                records_fetched INT DEFAULT 0,
+                analysis_triggered BOOLEAN DEFAULT FALSE,
+                report_sent BOOLEAN DEFAULT FALSE,
+                error_message TEXT,
+                details TEXT,
+                fetched_data_summary TEXT,
+                fetched_data_snapshot TEXT,
+                INDEX idx_ticker_fetch (ticker, fetch_date),
+                INDEX idx_fetch_type_date (fetch_type, fetch_date),
+                INDEX idx_new_data (new_data_available, fetch_date)
+            )
+        """)
+        
+        # 12. Scheduled Tasks Config table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS scheduled_tasks_config (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                task_name VARCHAR(50) UNIQUE NOT NULL,
+                enabled BOOLEAN DEFAULT TRUE,
+                cron_expression VARCHAR(100),
+                last_run TIMESTAMP NULL,
+                next_run TIMESTAMP NULL,
+                run_count INT DEFAULT 0,
+                success_count INT DEFAULT 0,
+                failure_count INT DEFAULT 0,
+                config JSON,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+        """)
+        
         connection.commit()
         cursor.close()
         print("All tables created successfully")

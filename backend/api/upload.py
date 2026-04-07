@@ -2,13 +2,18 @@ from __future__ import annotations
 
 import shutil
 import uuid
+import logging
 
 from fastapi import APIRouter, HTTPException, UploadFile
 
 from backend.config import UPLOAD_DIR
 from backend.models.schemas import ExtractionResponse
+from backend.models.error_models import ErrorResponse, validation_error, not_found_error
 from backend.services.pdf_service import extract_text_from_pdf
 from backend.services import extractor_service
+from backend.exceptions import DCFException
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/extract", tags=["extract"])
 

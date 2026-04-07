@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography, Input, Card, message, Spin } from 'antd';
+import { Button, Typography, Input, Card, App } from 'antd';
 import {
   FileSearchOutlined,
   CalculatorOutlined,
@@ -28,13 +28,14 @@ export default function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setFinancialData, setLoading } = useStore();
+  const { message } = App.useApp();
   
   const [loadingTicker, setLoadingTicker] = useState('');
   const [tickerInput, setTickerInput] = useState('');
 
   const handleLoadFromDb = async () => {
     if (!tickerInput.trim()) {
-      message.warning('请输入股票代码');
+      message.warning(t('home.load_ticker_empty'));
       return;
     }
 
@@ -46,14 +47,14 @@ export default function HomePage() {
       const response = await loadFromDb(ticker);
       if (response.success && response.financial_data) {
         setFinancialData(response.financial_data);
-        message.success(`成功加载 ${ticker} 的数据`);
+        message.success(t('home.load_success', { ticker }));
         navigate('/analysis');
       } else {
-        message.error(`未找到 ${ticker} 的数据，请先上传PDF进行估值`);
+        message.error(t('home.load_not_found', { ticker }));
       }
     } catch (error) {
       console.error('Error loading from DB:', error);
-      message.error('加载失败，请检查网络连接');
+      message.error(t('home.load_error'));
     } finally {
       setLoading(false);
       setLoadingTicker('');
@@ -120,14 +121,14 @@ export default function HomePage() {
           title={
             <div className="flex items-center gap-2">
               <DatabaseOutlined className="text-blue-500" />
-              <span>快速加载历史数据</span>
+              <span>{t('home.quick_load_title')}</span>
             </div>
           }
           className="max-w-2xl mx-auto"
         >
           <div className="flex gap-3">
             <Input
-              placeholder="输入股票代码（如：AAPL）"
+              placeholder={t('home.quick_load_placeholder')}
               value={tickerInput}
               onChange={(e) => setTickerInput(e.target.value.toUpperCase())}
               onPressEnter={handleLoadFromDb}
@@ -142,11 +143,11 @@ export default function HomePage() {
               loading={!!loadingTicker}
               icon={<DatabaseOutlined />}
             >
-              {loadingTicker ? `加载中...` : '从数据库加载'}
+              {loadingTicker ? t('common.loading') : t('home.quick_load_button')}
             </Button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            如果之前对该股票进行过估值，可以快速加载数据进行重新分析
+            {t('home.quick_load_hint')}
           </p>
         </Card>
       </section>

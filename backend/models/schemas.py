@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 from pydantic import BaseModel, Field
 
@@ -98,3 +98,31 @@ class NarrativeResponse(BaseModel):
 class CalculateRequest(BaseModel):
     financial_data: FinancialData
     parameters: DCFParameters
+
+
+class AgentConfig(BaseModel):
+    """Agent configuration model"""
+    ticker: str
+    enabled: bool = True
+    custom_interval_hours: Optional[int] = None
+
+
+class AgentStatusResponse(BaseModel):
+    """Agent status response model"""
+    agent_status: str
+    is_scheduled: bool
+    last_analysis: Optional[str] = None
+    current_task: Optional[Dict[str, Any]] = None
+
+
+class PortfolioRequest(BaseModel):
+    """Request model for portfolio analysis"""
+    tickers: Optional[List[str]] = None
+    force_update: bool = False
+
+
+class EmailRequest(BaseModel):
+    """Request model for sending emails"""
+    to_email: Optional[str] = None
+    subject: Optional[str] = None
+    body: str

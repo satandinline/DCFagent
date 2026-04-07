@@ -52,17 +52,17 @@ function ParamSlider({
   };
 
   return (
-    <div className="mb-4">
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-sm text-gray-600 dark:text-gray-400">{label}</span>
-        <Tag color="blue">
+    <div className="mb-5">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-sm text-gray-600 dark:text-gray-400 pr-2">{label}</span>
+        <Tag color="blue" className="!text-xs !px-2 !py-0.5">
           {displayValue}
           {config.suffix}
         </Tag>
       </div>
       <div className="flex items-center gap-3">
         <Slider
-          className="flex-1"
+          className="flex-1 !mb-0"
           min={sliderMin}
           max={sliderMax}
           step={sliderStep}
@@ -72,13 +72,14 @@ function ParamSlider({
         />
         <InputNumber
           size="small"
-          className="!w-24"
+          className="!w-20"
           min={sliderMin}
           max={sliderMax}
           step={sliderStep}
           value={displayValue}
           onChange={handleInput}
-          addonAfter={config.suffix || undefined}
+          formatter={(v) => `${v ?? ''}${config.suffix}`}
+          parser={(v) => parseFloat((v ?? '').replace(config.suffix, ''))}
         />
       </div>
     </div>
