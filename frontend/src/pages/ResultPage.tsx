@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Collapse, Typography, Empty, Tooltip, Tag, Divider, message } from 'antd';
+import { Button, Card, Collapse, Typography, Empty, Tooltip, Tag, Divider } from 'antd';
 import {
   ArrowLeftOutlined,
   DownloadOutlined,
@@ -70,6 +70,10 @@ export default function ResultPage() {
       setLoadingTrend(false);
     }
   };
+
+  // Debug: Log dcfResult changes
+  console.log('ResultPage dcfResult:', dcfResult);
+  console.log('ResultPage projections:', dcfResult?.projections);
 
   if (!dcfResult || !financialData) return null;
 
@@ -147,7 +151,7 @@ export default function ResultPage() {
               icon={<HistoryOutlined />} 
               onClick={() => navigate(`/history/${financialData.ticker}`)}
             >
-              查看历史
+              {t('result.view_history')}
             </Button>
           )}
           <Tooltip title="Coming soon">

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Tabs, Button, Card, Spin, Descriptions, InputNumber, Input, message } from 'antd';
+import { Tabs, Button, Card, Spin, Descriptions, InputNumber, Input, App } from 'antd';
 import {
   CloudUploadOutlined,
   EditOutlined,
@@ -29,6 +29,7 @@ const pctFields: (keyof FinancialData)[] = [
 export default function AnalysisPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const {
     financialData,
     setFinancialData,
@@ -55,6 +56,15 @@ export default function AnalysisPage() {
 
   const canCalculate = !!financialData?.company_name && !!financialData?.revenue;
 
+  // Debug: Log financialData changes
+  if (financialData) {
+    console.log('当前财务数据状态:', {
+      company_name: financialData.company_name,
+      revenue: financialData.revenue,
+      canCalculate
+    });
+  }
+
   const handleCalculate = async () => {
     if (!financialData) {
       message.warning(t('common.no_data'));
@@ -65,10 +75,23 @@ export default function AnalysisPage() {
     setError('');
 
     try {
-      const request = { financial_data: financialData, parameters: dcfParameters };
+      // 百分比字段存储的是用户输入的数值（如 15 表示 15%），
+      // 转换为小数格式（如 0.15）发送给后端
+      const percentToDecimal = (v: number) => v / 100;
+      const financialForApi = {
+        ...financialData,
+        revenue_growth: percentToDecimal(financialData.revenue_growth),
+        operating_margin: percentToDecimal(financialData.operating_margin),
+        tax_rate: percentToDecimal(financialData.tax_rate),
+        risk_free_rate: percentToDecimal(financialData.risk_free_rate),
+        market_return: percentToDecimal(financialData.market_return),
+        cost_of_debt: percentToDecimal(financialData.cost_of_debt),
+      };
+      const request = { financial_data: financialForApi, parameters: dcfParameters };
 
       setCalcStep(t('analysis.calculating'));
       const dcfResult = await calculateDCF(request, true); // saveToDb = true
+      console.log('DCF计算结果 projections:', dcfResult.projections);
       setDCFResult(dcfResult);
 
       setCalcStep(t('analysis.sensitivity_btn'));
@@ -184,32 +207,42 @@ export default function AnalysisPage() {
           />
 
           {renderDataSummary()}
+
+          {/* Bottom calculate button - left aligned with upload box */}
+          <div className="flex flex-col items-center mt-8 mb-4">
+            <Button
+              type="primary"
+              size="large"
+              icon={loading ? <ThunderboltOutlined className="animate-pulse" /> : <CalculatorOutlined />}
+              onClick={handleCalculate}
+              disabled={!canCalculate || loading}
+              className="!h-12 !px-10 !text-base !font-semibold !rounded-xl hover:!scale-105 transition-transform"
+              style={{
+                background: canCalculate
+                  ? 'linear-gradient(135deg, #2b6cb0, #3182ce)'
+                  : undefined,
+                boxShadow: canCalculate ? '0 4px 20px rgba(43, 108, 176, 0.35)' : undefined,
+              }}
+            >
+              {loading ? calcStep || t('analysis.calculating') : t('analysis.calculate_btn')}
+            </Button>
+            {!financialData && (
+              <div className="text-center text-gray-500 mt-3">
+                <p className="text-sm">{t('analysis.upload_required')}</p>
+              </div>
+            )}
+            {financialData && !canCalculate && (
+              <div className="text-center text-orange-500 mt-3">
+                <p className="text-sm">{t('analysis.field_required')}</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* RIGHT: DCF parameters */}
         <div className="w-full lg:w-80 xl:w-96 shrink-0">
           <ParamPanel />
         </div>
-      </div>
-
-      {/* Bottom calculate button */}
-      <div className="flex justify-center mt-8 mb-4">
-        <Button
-          type="primary"
-          size="large"
-          icon={loading ? <ThunderboltOutlined className="animate-pulse" /> : <CalculatorOutlined />}
-          onClick={handleCalculate}
-          disabled={!canCalculate || loading}
-          className="!h-12 !px-10 !text-base !font-semibold !rounded-xl hover:!scale-105 transition-transform"
-          style={{
-            background: canCalculate
-              ? 'linear-gradient(135deg, #2b6cb0, #3182ce)'
-              : undefined,
-            boxShadow: canCalculate ? '0 4px 20px rgba(43, 108, 176, 0.35)' : undefined,
-          }}
-        >
-          {loading ? calcStep || t('analysis.calculating') : t('analysis.calculate_btn')}
-        </Button>
       </div>
     </Spin>
   );

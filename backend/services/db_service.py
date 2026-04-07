@@ -345,6 +345,14 @@ class DatabaseService:
         conn = self.get_connection()
         try:
             with conn.cursor() as cursor:
+                # 先确保 ticker 存在于 stocks 表中（避免外键约束失败）
+                company_name = valuation_data.get('company_name', '')
+                currency = valuation_data.get('currency', 'CNY')
+                cursor.execute(
+                    "INSERT IGNORE INTO stocks (ticker, company_name, locale) VALUES (%s, %s, %s)",
+                    (ticker, company_name, 'CN' if currency == 'CNY' else 'US')
+                )
+                
                 sql = """
                     INSERT INTO valuation_results 
                     (ticker, company_name, fiscal_year, currency, per_share_value,
@@ -356,9 +364,9 @@ class DatabaseService:
                 """
                 cursor.execute(sql, (
                     ticker,
-                    valuation_data.get('company_name'),
+                    company_name,
                     valuation_data.get('fiscal_year'),
-                    valuation_data.get('currency', 'CNY'),
+                    currency,
                     valuation_data.get('per_share_value'),
                     valuation_data.get('enterprise_value'),
                     valuation_data.get('equity_value'),
@@ -401,6 +409,21 @@ class DatabaseService:
             print(f"Error retrieving valuation history: {e}")
             return []
     
+    def get_all_valuation_history(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """Retrieve all valuation history across all stocks"""
+        conn = self.get_connection()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT * FROM valuation_results 
+                    ORDER BY valuation_date DESC 
+                    LIMIT %s
+                """, (limit,))
+                return cursor.fetchall()
+        except Error as e:
+            print(f"Error retrieving all valuation history: {e}")
+            return []
+    
     def get_latest_valuation(self, ticker: str) -> Optional[Dict[str, Any]]:
         """Get the most recent valuation for a stock"""
         conn = self.get_connection()
@@ -415,6 +438,20 @@ class DatabaseService:
                 return cursor.fetchone()
         except Error as e:
             print(f"Error retrieving latest valuation: {e}")
+            return None
+    
+    def get_valuation_by_id(self, valuation_id: int) -> Optional[Dict[str, Any]]:
+        """Get a specific valuation by ID"""
+        conn = self.get_connection()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT * FROM valuation_results 
+                    WHERE id = %s
+                """, (valuation_id,))
+                return cursor.fetchone()
+        except Error as e:
+            print(f"Error retrieving valuation by id: {e}")
             return None
     
     def calculate_growth_trends(self, ticker: str) -> Dict[str, Any]:

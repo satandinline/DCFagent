@@ -20,7 +20,7 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
 
   if (loading) {
     return (
-      <Card title="📈 财务趋势分析">
+      <Card title={t('trend.title')}>
         <Spin size="large" className="w-full py-12" />
       </Card>
     );
@@ -28,8 +28,8 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
 
   if (!data || !data.years || data.years.length === 0) {
     return (
-      <Card title="📈 财务趋势分析">
-        <Empty description="暂无趋势数据" />
+      <Card title={t('trend.title')}>
+        <Empty description={t('trend.no_data')} />
       </Card>
     );
   }
@@ -42,7 +42,7 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
       },
     },
     legend: {
-      data: ['收入', '利润', '利润率'],
+      data: [t('trend.revenue'), t('trend.profit'), t('trend.margin')],
       top: 10,
     },
     grid: {
@@ -59,7 +59,7 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
     yAxis: [
       {
         type: 'value',
-        name: '金额',
+        name: t('trend.amount'),
         position: 'left',
         axisLabel: {
           formatter: (value: number) => {
@@ -75,7 +75,7 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
       },
       {
         type: 'value',
-        name: '利润率',
+        name: t('trend.margin'),
         position: 'right',
         axisLabel: {
           formatter: '{value}%',
@@ -84,7 +84,7 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
     ],
     series: [
       {
-        name: '收入',
+        name: t('trend.revenue'),
         type: 'line',
         smooth: true,
         data: data.revenue_trend || [],
@@ -96,7 +96,7 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
         },
       },
       {
-        name: '利润',
+        name: t('trend.profit'),
         type: 'line',
         smooth: true,
         data: data.profit_trend || [],
@@ -105,7 +105,7 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
         },
       },
       {
-        name: '利润率',
+        name: t('trend.margin'),
         type: 'line',
         smooth: true,
         yAxisIndex: 1,
@@ -124,10 +124,10 @@ export default function TrendChart({ data, loading = false }: TrendChartProps) {
     <Card
       title={
         <div className="flex items-center justify-between">
-          <span>📈 财务趋势分析</span>
+          <span>{t('trend.title')}</span>
           {data.cagr && (
             <span className="text-sm text-gray-500">
-              CAGR: {(data.cagr * 100).toFixed(2)}%
+              {t('trend.cagr')}: {(data.cagr * 100).toFixed(2)}%
             </span>
           )}
         </div>

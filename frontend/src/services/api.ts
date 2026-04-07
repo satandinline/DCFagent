@@ -125,3 +125,50 @@ export async function getValuationHistory(ticker: string, limit: number = 10) {
     handleError(err);
   }
 }
+
+export async function getAllValuationHistory(limit: number = 50) {
+  try {
+    const { data } = await api.get(`/valuation-history`, {
+      params: { limit }
+    });
+    return data;
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+export async function downloadReport(valuationId: number, format: 'json' | 'txt' = 'txt') {
+  try {
+    const response = await fetch(`/api/report/${valuationId}/download?format=${format}`, {
+      method: 'GET',
+    });
+    
+    if (!response.ok) {
+      throw new Error('Download failed');
+    }
+    
+    // Get filename from Content-Disposition header
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = `dcf_report_${valuationId}.${format}`;
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename\*?=['"]?([^'"\r\n]+)/i);
+      if (match) {
+        filename = match[1];
+      }
+    }
+    
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    return true;
+  } catch (err) {
+    handleError(err);
+    return false;
+  }
+}

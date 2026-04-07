@@ -3,6 +3,7 @@ uvicorn[standard]==0.30.6
 openai>=1.58.0,<2.0.0
 httpx>=0.27.0,<1.0.0
 pdfplumber==0.11.4
+pymupdf>=1.24.0  # Fast PDF parsing (optional but recommended)
 python-multipart==0.0.12
 pydantic>=2.9.0,<3.0.0
 python-dotenv==1.0.1

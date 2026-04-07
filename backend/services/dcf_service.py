@@ -194,8 +194,10 @@ def save_valuation_to_db(
     notes: Optional[str] = None
 ) -> bool:
     """Save DCF valuation result to database"""
-    if not financial_data.ticker:
-        return False
+    # Use ticker if available, otherwise use company_name or generate a placeholder
+    ticker = financial_data.ticker
+    if not ticker:
+        ticker = financial_data.company_name[:10].upper().replace(' ', '_') if financial_data.company_name else 'NO_TICKER'
     
     try:
         # Calculate FCF for storage
@@ -225,7 +227,7 @@ def save_valuation_to_db(
             'notes': notes
         }
         
-        success = db_service.insert_valuation_result(financial_data.ticker, valuation_data)
+        success = db_service.insert_valuation_result(ticker, valuation_data)
         return success
     except Exception as e:
         print(f"Error saving valuation to database: {e}")

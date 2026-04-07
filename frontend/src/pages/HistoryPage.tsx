@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Table, Button, Spin, message, Empty, Tag } from 'antd';
-import { ArrowLeftOutlined, HistoryOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { Card, Table, Button, Spin, Empty, Tag, App } from 'antd';
+import { ArrowLeftOutlined, HistoryOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { getValuationHistory } from '@/services/api';
+import { getAllValuationHistory, downloadReport } from '@/services/api';
 
 interface ValuationRecord {
   id: number;
+  ticker?: string;
   date: string;
   company_name: string;
   per_share_value: number | null;
@@ -20,32 +21,27 @@ interface ValuationRecord {
 
 export default function HistoryPage() {
   const { t } = useTranslation();
-  const { ticker } = useParams<{ ticker: string }>();
   const navigate = useNavigate();
-  
+  const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<ValuationRecord[]>([]);
 
   useEffect(() => {
-    if (ticker) {
-      loadHistory();
-    }
-  }, [ticker]);
+    loadAllHistory();
+  }, []);
 
-  const loadHistory = async () => {
-    if (!ticker) return;
-    
+  const loadAllHistory = async () => {
     setLoading(true);
     try {
-      const response = await getValuationHistory(ticker, 20);
+      const response = await getAllValuationHistory(50);
       if (response.success) {
         setHistory(response.valuations || []);
       } else {
-        message.error('Failed to load history');
+        message.error(t('upload.load_error'));
       }
     } catch (error) {
       console.error('Error loading history:', error);
-      message.error('Error loading valuation history');
+      message.error(t('upload.trend_error'));
     } finally {
       setLoading(false);
     }
@@ -53,46 +49,52 @@ export default function HistoryPage() {
 
   const columns = [
     {
-      title: '日期',
-      dataIndex: 'date',
-      key: 'date',
-      render: (date: string) => new Date(date).toLocaleDateString('zh-CN'),
+      title: t('history.ticker'),
+      dataIndex: 'ticker',
+      key: 'ticker',
+      render: (ticker: string | undefined) => ticker || '-',
     },
     {
-      title: '公司名称',
+      title: t('history.date'),
+      dataIndex: 'date',
+      key: 'date',
+      render: (date: string) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: t('history.company_name'),
       dataIndex: 'company_name',
       key: 'company_name',
     },
     {
-      title: '每股价值',
+      title: t('history.per_share_value'),
       dataIndex: 'per_share_value',
       key: 'per_share_value',
       render: (value: number | null) => 
         value ? `$${value.toFixed(2)}` : '-',
     },
     {
-      title: '企业价值',
+      title: t('history.enterprise_value'),
       dataIndex: 'enterprise_value',
       key: 'enterprise_value',
       render: (value: number | null) => 
         value ? `$${(value / 1e9).toFixed(2)}B` : '-',
     },
     {
-      title: 'WACC',
+      title: t('history.wacc'),
       dataIndex: 'wacc_used',
       key: 'wacc_used',
       render: (value: number | null) => 
         value ? `${(value * 100).toFixed(2)}%` : '-',
     },
     {
-      title: '当前股价',
+      title: t('history.current_price'),
       dataIndex: 'current_price',
       key: 'current_price',
       render: (value: number | null) => 
         value ? `$${value.toFixed(2)}` : '-',
     },
     {
-      title: '涨跌幅',
+      title: t('history.upside_downside'),
       dataIndex: 'upside_downside',
       key: 'upside_downside',
       render: (value: number | null) => {
@@ -106,7 +108,35 @@ export default function HistoryPage() {
         );
       },
     },
+    {
+      title: t('common.actions'),
+      key: 'actions',
+      width: 100,
+      render: (_: any, record: ValuationRecord) => (
+        <Button 
+          type="link" 
+          icon={<DownloadOutlined />} 
+          onClick={() => handleDownload(record.id)}
+        >
+          {t('common.export')}
+        </Button>
+      ),
+    },
   ];
+
+  const handleDownload = async (valuationId: number) => {
+    try {
+      const success = await downloadReport(valuationId, 'txt');
+      if (success) {
+        message.success(t('common.download_success'));
+      } else {
+        message.error(t('common.download_error'));
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      message.error(t('common.download_error'));
+    }
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -114,12 +144,12 @@ export default function HistoryPage() {
         title={
           <div className="flex items-center gap-2">
             <HistoryOutlined />
-            <span>估值历史 - {ticker}</span>
+            <span>{t('history.title')}</span>
           </div>
         }
         extra={
-          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>
-            返回
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/')}> 
+            {t('history.back_home')}
           </Button>
         }
       >
@@ -133,7 +163,7 @@ export default function HistoryPage() {
               scroll={{ x: true }}
             />
           ) : (
-            <Empty description="暂无估值历史记录" />
+            <Empty description={t('history.no_records')} />
           )}
         </Spin>
       </Card>

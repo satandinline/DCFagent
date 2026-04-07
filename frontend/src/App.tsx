@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { ConfigProvider, Layout, Menu, Button, Dropdown, theme as antTheme } from 'antd';
+import { ConfigProvider, Layout, Menu, Button, Dropdown, theme as antTheme, App as AntdApp } from 'antd';
 import {
   HomeOutlined,
   LineChartOutlined,
   BarChartOutlined,
+  HistoryOutlined,
   SunOutlined,
   MoonOutlined,
   GlobalOutlined,
@@ -22,7 +23,7 @@ const { Header, Content, Footer } = Layout;
 function AppNavigation() {
   const { t } = useTranslation();
   const location = useLocation();
-  const { theme: appTheme, toggleTheme, language, setLanguage } = useStore();
+  const { theme: appTheme, toggleTheme, language, setLanguage, dcfResult } = useStore();
 
   const menuItems = [
     { key: '/', icon: <HomeOutlined />, label: <Link to="/">{t('nav.home')}</Link> },
@@ -32,9 +33,35 @@ function AppNavigation() {
       label: <Link to="/analysis">{t('nav.analysis')}</Link>,
     },
     {
+      key: '/history',
+      icon: <HistoryOutlined />,
+      label: <Link to="/history">{t('history.title')}</Link>,
+    },
+    {
       key: '/result',
       icon: <BarChartOutlined />,
-      label: <Link to="/result">{t('nav.result')}</Link>,
+      label: (
+        <span
+          onClick={(e) => {
+            if (!dcfResult) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
+          style={{ opacity: dcfResult ? 1 : 0.5, cursor: dcfResult ? 'pointer' : 'not-allowed' }}
+        >
+          <Link
+            to={dcfResult ? '/result' : '/analysis'}
+            onClick={(e) => {
+              if (!dcfResult) {
+                e.preventDefault();
+              }
+            }}
+          >
+            {t('nav.result')}
+          </Link>
+        </span>
+      ),
     },
   ];
 
@@ -125,28 +152,31 @@ export default function App() {
         },
       }}
     >
-      <BrowserRouter>
-        <Layout className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
-          <AppNavigation />
-          <Content className="p-4 md:p-8 max-w-7xl mx-auto w-full">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/analysis" element={<AnalysisPage />} />
-              <Route path="/result" element={<ResultPage />} />
-              <Route path="/history/:ticker" element={<HistoryPage />} />
-            </Routes>
-          </Content>
-          <Footer
-            className="text-center text-sm"
-            style={{
-              background: 'transparent',
-              color: 'var(--color-text-secondary)',
-            }}
-          >
-            DCF Valuation Agent &copy; {new Date().getFullYear()}
-          </Footer>
-        </Layout>
-      </BrowserRouter>
+      <AntdApp>
+        <BrowserRouter>
+          <Layout className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+            <AppNavigation />
+            <Content className="p-4 md:p-8 max-w-7xl mx-auto w-full">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/analysis" element={<AnalysisPage />} />
+                <Route path="/result" element={<ResultPage />} />
+                <Route path="/history" element={<HistoryPage />} />
+                <Route path="/history/:ticker" element={<HistoryPage />} />
+              </Routes>
+            </Content>
+            <Footer
+              className="text-center text-sm"
+              style={{
+                background: 'transparent',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
+              DCF Valuation Agent &copy; {new Date().getFullYear()}
+            </Footer>
+          </Layout>
+        </BrowserRouter>
+      </AntdApp>
     </ConfigProvider>
   );
 }
